@@ -7,3 +7,13 @@
       url: jdbc:mysql://localhost:3306/tastyTales?serverTimezone=Asia/Seoul
       username: root
       password: 1211zaqw
+
+    jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: none
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  jwt:
+    issuer: matdori123
+    secret_key: rjsdud1827@gmail.com

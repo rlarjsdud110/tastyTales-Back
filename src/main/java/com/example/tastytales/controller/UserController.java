@@ -19,9 +19,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/save")
-    public ResponseEntity<Void> save(@RequestBody UserDTO userDTO){
+    public ResponseEntity<String> save(@RequestBody UserDTO userDTO){
         userService.save(userDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공 ");
     }
 
     @PostMapping("/login")

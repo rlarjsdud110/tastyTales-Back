@@ -8,6 +8,8 @@ import com.example.tastytales.entity.UserEntity;
 import com.example.tastytales.repository.FoodRepository;
 import com.example.tastytales.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FoodRepository foodRepository;
+
 
     public void save(UserDTO userDTO){
         Optional<UserEntity> optionalUserEntity = userRepository.findByUserId(userDTO.getUserId());
@@ -39,7 +42,8 @@ public class UserService {
 
     public List<FoodResponseDTO> login(UserRequestDTO userRequestDTO){
         UserEntity userEntity = userRepository.findByUserIdAndPassword(userRequestDTO.getUserId(), userRequestDTO.getPassword())
-                .orElseThrow(() -> new IllegalArgumentException("Not Found User ID or PASSWORD"));
+                .orElseThrow(() -> new IllegalArgumentException("Not Found UserID or userPassword"));
+
 
         List<FoodEntity> foodEntityList = foodRepository.findByUserNo(userEntity.getUserNo());
         List<FoodResponseDTO> foodResponseDTOList = new ArrayList<>();
