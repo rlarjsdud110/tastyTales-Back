@@ -25,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<List<FoodResponseDTO>> login(@RequestBody UserRequestDTO userRequestDTO){
-        List<FoodResponseDTO> foodResponseDTO = userService.login(userRequestDTO);
+    public ResponseEntity<String> login(@RequestBody UserRequestDTO userRequestDTO){
+        String accessToken = userService.login(userRequestDTO);
 
-        return ResponseEntity.status(HttpStatus.OK).body(foodResponseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(accessToken);
     }
 }

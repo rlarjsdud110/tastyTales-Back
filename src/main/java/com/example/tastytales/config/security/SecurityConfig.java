@@ -1,5 +1,6 @@
 package com.example.tastytales.config.security;
 
+import com.example.tastytales.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @RequiredArgsConstructor
@@ -16,6 +19,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
+
+    private final JwtProvider jwtProvider;
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
@@ -25,8 +30,13 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .logout().disable();
 
+        httpSecurity.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        httpSecurity.addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         httpSecurity.authorizeRequests()
-                .antMatchers("/user/**").permitAll()
+                .antMatchers("/user/**", "/token").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.exceptionHandling()
@@ -36,5 +46,9 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    @Bean
+    public TokenFilter tokenFilter(){
+        return new TokenFilter(jwtProvider);
+    }
 
 }

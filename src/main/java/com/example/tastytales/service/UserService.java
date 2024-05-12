@@ -1,5 +1,6 @@
 package com.example.tastytales.service;
 
+import com.example.tastytales.config.jwt.JwtProvider;
 import com.example.tastytales.dto.UserDTO;
 import com.example.tastytales.dto.request.UserRequestDTO;
 import com.example.tastytales.dto.response.FoodResponseDTO;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +23,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final FoodRepository foodRepository;
-
+    private final JwtProvider jwtProvider;
 
     public void save(UserDTO userDTO){
         Optional<UserEntity> optionalUserEntity = userRepository.findByUserId(userDTO.getUserId());
@@ -40,17 +41,11 @@ public class UserService {
         }
     }
 
-    public List<FoodResponseDTO> login(UserRequestDTO userRequestDTO){
+    public String login(UserRequestDTO userRequestDTO){
         UserEntity userEntity = userRepository.findByUserIdAndPassword(userRequestDTO.getUserId(), userRequestDTO.getPassword())
                 .orElseThrow(() -> new IllegalArgumentException("Not Found UserID or userPassword"));
 
 
-        List<FoodEntity> foodEntityList = foodRepository.findByUserNo(userEntity.getUserNo());
-        List<FoodResponseDTO> foodResponseDTOList = new ArrayList<>();
-
-        for(FoodEntity foodEntity : foodEntityList){
-            foodResponseDTOList.add(FoodResponseDTO.toEntity(foodEntity));
-        }
-        return foodResponseDTOList;
+        return jwtProvider.generateToken(userEntity, Duration.ofHours(2));
     }
 }
